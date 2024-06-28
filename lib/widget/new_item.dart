@@ -21,33 +21,33 @@ class _NewItemState extends State<NewItem> {
   int _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.fruit]!;
   void _saveItem() async {
-    _globalKey.currentState!.validate();
+    if (_globalKey.currentState!.validate()) {
+      _globalKey.currentState!.save();
+      setState(() {
+        _isSending = true;
+      });
+      final url = Uri.https('shopping-list-c31a2-default-rtdb.firebaseio.com',
+          'shopping-list.json');
+      final response = await http.post(url,
+          headers: {'content-Type': 'application/json'},
+          body: jsonEncode({
+            'name': _enteredName!,
+            'quantity': _enteredQuantity,
+            'category': _selectedCategory.lable
+          }));
 
-    _globalKey.currentState!.save();
-    setState(() {
-      _isSending = true;
-    });
-    final url = Uri.https('shopping-list-c31a2-default-rtdb.firebaseio.com',
-        'shopping-list.json');
-    final response = await http.post(url,
-        headers: {'content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': _enteredName!,
-          'quantity': _enteredQuantity,
-          'category': _selectedCategory.lable
-        }));
-
-    print(response.body);
-    print(response.statusCode);
-    final Map<String, dynamic> resData = jsonDecode(response.body);
-    if (!context.mounted) {
-      return;
-    } else {
-      Navigator.of(context).pop(GroceryItem(
-          id: resData['name'],
-          name: _enteredName!,
-          quantity: _enteredQuantity,
-          category: _selectedCategory));
+      print(response.body);
+      print(response.statusCode);
+      final Map<String, dynamic> resData = jsonDecode(response.body);
+      if (!context.mounted) {
+        return;
+      } else {
+        Navigator.of(context).pop(GroceryItem(
+            id: resData['name'],
+            name: _enteredName!,
+            quantity: _enteredQuantity,
+            category: _selectedCategory));
+      }
     }
   }
 
