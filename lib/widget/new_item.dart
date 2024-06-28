@@ -5,6 +5,7 @@ import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/data/dummy_items.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:shopping_list/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -38,10 +39,15 @@ class _NewItemState extends State<NewItem> {
 
     print(response.body);
     print(response.statusCode);
+    final Map<String, dynamic> resData = jsonDecode(response.body);
     if (!context.mounted) {
       return;
     } else {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(GroceryItem(
+          id: resData['name'],
+          name: _enteredName!,
+          quantity: _enteredQuantity,
+          category: _selectedCategory));
     }
   }
 
@@ -144,7 +150,7 @@ class _NewItemState extends State<NewItem> {
                   ElevatedButton(
                       onPressed: _isSending ? null : _saveItem,
                       child: _isSending
-                          ? const  SizedBox(
+                          ? const SizedBox(
                               height: 16,
                               width: 16,
                               child: CircularProgressIndicator(),

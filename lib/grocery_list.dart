@@ -63,9 +63,14 @@ class _GroceryListState extends State<GroceryList> {
   }
 
   void addItem() async {
-    await Navigator.of(context).push<GroceryItem>(
+    final newItem = await Navigator.of(context).push<GroceryItem>(
         MaterialPageRoute(builder: (context) => const NewItem()));
-    loadItems();
+    if (newItem == null) {
+      return;
+    }
+    setState(() {
+      _groceryItems.add(newItem);
+    });
   }
 
   void removeItem(GroceryItem item) async {
@@ -129,16 +134,17 @@ class _GroceryListState extends State<GroceryList> {
       });
     }
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Your Groceries"),
-          actions: [
-            IconButton(
-                onPressed: () => addItem(),
-                icon: const Icon(
-                  Icons.add,
-                ))
-          ],
-        ),
-        body: content,);
+      appBar: AppBar(
+        title: const Text("Your Groceries"),
+        actions: [
+          IconButton(
+              onPressed: () => addItem(),
+              icon: const Icon(
+                Icons.add,
+              ))
+        ],
+      ),
+      body: content,
+    );
   }
 }
